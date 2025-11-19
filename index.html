@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Burlador de Sevilla - Personajes y Relaciones</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #2c3e50;
+            --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            --font-trans: 'Georgia', 'Times New Roman', serif;
+            --shadow: 0 4px 8px rgba(0,0,0,0.1);
+            
+            /* Colors */
+            --col-protagonist: #fff9c4; /* Yellow */
+            --col-victim: #ffcdd2;      /* Pink */
+            --col-affected: #ffe0b2;    /* Orange */
+            --col-authority: #bbdefb;   /* Blue */
+            --col-accomplice: #c8e6c9;  /* Green */
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Main Title Styling */
+        h1 {
+            color: #2c3e50;
+            margin: 20px 0 40px 0;
+            font-size: 2.5em;
+            text-align: center;
+            font-family: var(--font-trans); /* Using the Serif font for the title adds a classic touch */
+        }
+
+        .diagram-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        #connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Grid Layout */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            /* Gap of 90px ensures space for labels */
+            gap: 90px 30px; 
+            position: relative;
+            z-index: 2;
+            padding-top: 20px;
+        }
+
+        /* Nodes */
+        .node {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
+            position: relative;
+            width: 85%;
+            justify-self: center;
+            z-index: 2;
+        }
+
+        .protagonist {
+            background-color: var(--col-protagonist);
+            border-width: 3px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            width: 240px;
+            height: 80px;
+            grid-column: 1 / -1; 
+            justify-self: center;
+            margin-bottom: 20px;
+        }
+
+        .victim { background-color: var(--col-victim); border-color: #e57373; }
+        .affected { background-color: var(--col-affected); border-color: #ffb74d; }
+        .authority { background-color: var(--col-authority); border-color: #64b5f6; border-width: 3px; }
+        .accomplice { background-color: var(--col-accomplice); border-color: #81c784; }
+        .dashed { border-style: dashed; opacity: 0.8; }
+
+        /* Transition Labels */
+        .transition-label {
+            position: absolute;
+            font-family: var(--font-trans);
+            font-style: italic;
+            font-size: 0.95em;
+            color: #333;
+            padding: 6px 10px;
+            border-radius: 6px;
+            z-index: 3;
+            text-align: center;
+            white-space: nowrap;
+            transform: translate(-50%, -50%);
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Specific Colors for Labels */
+        .lbl-victim { background-color: var(--col-victim); }
+        .lbl-affected { background-color: var(--col-affected); }
+        .lbl-authority { background-color: var(--col-authority); }
+        .lbl-accomplice { background-color: var(--col-accomplice); }
+        .lbl-neutral { background-color: #fff; }
+
+        /* Placement Classes */
+        #don-juan { grid-row: 1; }
+
+        /* Row 2 */
+        #isabela { grid-row: 2; grid-column: 1; }
+        #octavio { grid-row: 2; grid-column: 2; }
+        #rey-napoles { grid-row: 2; grid-column: 3; }
+        #catalinon { grid-row: 2; grid-column: 4; }
+
+        /* Row 3 */
+        #tisbea { grid-row: 3; grid-column: 1; }
+        #pedro { grid-row: 3; grid-column: 4; }
+
+        /* Row 4 */
+        #ana { grid-row: 4; grid-column: 1; }
+        #mota { grid-row: 4; grid-column: 2; }
+
+        /* Row 5 */
+        #gonzalo { grid-row: 5; grid-column: 2; }
+        #rey-castilla { grid-row: 5; grid-column: 3; }
+        #mota-right { grid-row: 5; grid-column: 4; }
+
+        /* Row 6 */
+        #aminta { grid-row: 6; grid-column: 1; }
+        #batricio { grid-row: 6; grid-column: 2; }
+
+        /* Mobile */
+        @media (max-width: 900px) {
+            .grid-container { grid-template-columns: repeat(2, 1fr); gap: 80px 20px; }
+            .protagonist { grid-column: 1 / -1; }
+            h1 { font-size: 1.8em; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>El burlador de Sevilla: Personajes y relaciones</h1>
+
+    <div class="diagram-wrapper">
+        <svg id="connections">
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#555" />
+                </marker>
+            </defs>
+        </svg>
+
+        <!-- The grid structure remains the same -->
+        <div class="grid-container">
+            <!-- Row 1 -->
+            <div id="don-juan" class="node protagonist">Don Juan<br>Tenorio</div>
+
+            <!-- Row 2 -->
+            <div id="isabela" class="node victim">Isabela</div>
+            <div id="octavio" class="node affected">Duque Octavio</div>
+            <div id="rey-napoles" class="node authority">Rey de Nápoles</div>
+            <div id="catalinon" class="node accomplice">Catalinón</div>
+
+            <!-- Row 3 -->
+            <div id="tisbea" class="node victim">Tisbea</div>
+            <div id="pedro" class="node accomplice">Don Pedro<br>Tenorio</div>
+
+            <!-- Row 4 -->
+            <div id="ana" class="node victim">Doña Ana</div>
+            <div id="mota" class="node affected">Marqués de la<br>Mota</div>
+
+            <!-- Row 5 -->
+            <div id="gonzalo" class="node affected">Don Gonzalo</div>
+            <div id="rey-castilla" class="node authority">Rey de Castilla<br>& D. Juan (Padre)</div>
+            <div id="mota-right" class="node accomplice dashed">Marqués de la<br>Mota</div>
+
+            <!-- Row 6 -->
+            <div id="aminta" class="node victim">Aminta</div>
+            <div id="batricio" class="node affected">Batricio<br>& Gaseno</div>
+        </div>
+    </div>
+
+    <script>
+        function createTransitionLabel(text, x, y, colorClass = 'lbl-neutral') {
+            const label = document.createElement('div');
+            label.className = 'transition-label ' + colorClass;
+            label.innerHTML = text;
+            label.style.left = x + 'px';
+            label.style.top = y + 'px';
+            document.querySelector('.diagram-wrapper').appendChild(label);
+        }
+
+        function connect(startId, endId, type = 'straight', labelText = null, labelColorClass = 'lbl-neutral') {
+            const svg = document.getElementById('connections');
+            const startElem = document.getElementById(startId);
+            const endElem = document.getElementById(endId);
+            const container = document.querySelector('.diagram-wrapper');
+
+            if (!startElem || !endElem) return;
+
+            const cRect = container.getBoundingClientRect();
+            const sRect = startElem.getBoundingClientRect();
+            const eRect = endElem.getBoundingClientRect();
+
+            const x1 = sRect.left + sRect.width / 2 - cRect.left;
+            const y1 = sRect.top + sRect.height / 2 - cRect.top;
+            const x2 = eRect.left + eRect.width / 2 - cRect.left;
+            const y2 = eRect.top + eRect.height / 2 - cRect.top;
+
+            const sBottom = y1 + sRect.height / 2;
+            const sRight = x1 + sRect.width / 2;
+            const eTop = y2 - eRect.height / 2;
+            const eLeft = x2 - eRect.width / 2;
+
+            let d = '';
+            let labelX = 0;
+            let labelY = 0;
+
+            if (type === 'vertical') {
+                d = `M ${x1} ${sBottom} L ${x2} ${eTop}`;
+                labelX = x1;
+                labelY = (sBottom + eTop) / 2;
+            } else if (type === 'horizontal') {
+                d = `M ${sRight} ${y1} L ${eLeft} ${y2}`;
+                labelX = (sRight + eLeft) / 2;
+                labelY = y1;
+            } else if (type === 'branched-top') {
+                d = `M ${x1} ${sBottom} L ${x2} ${eTop}`;
+                labelX = (x1 + x2) / 2;
+                labelY = (sBottom + eTop) / 2;
+            } else {
+                d = `M ${x1} ${y1} L ${x2} ${y2}`;
+                labelX = (x1 + x2) / 2;
+                labelY = (y1 + y2) / 2;
+            }
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', d);
+            path.setAttribute('stroke', '#555');
+            path.setAttribute('stroke-width', '2');
+            path.setAttribute('fill', 'none');
+            path.setAttribute('marker-end', 'url(#arrowhead)');
+            svg.appendChild(path);
+
+            if (labelText) {
+                createTransitionLabel(labelText, labelX, labelY, labelColorClass);
+            }
+        }
+
+        function draw() {
+            const svg = document.getElementById('connections');
+            svg.innerHTML = '<defs><marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#555" /></marker></defs>';
+            
+            // Clear old labels
+            document.querySelectorAll('.transition-label').forEach(el => el.remove());
+
+            // 1. Don Juan branches with COLORED LABELS
+            connect('don-juan', 'isabela', 'branched-top', 'burla a...', 'lbl-victim');
+            connect('don-juan', 'octavio', 'branched-top', 'afectando a...', 'lbl-affected');
+            connect('don-juan', 'rey-napoles', 'branched-top', 'autoridades<br>involucradas', 'lbl-authority');
+            connect('don-juan', 'catalinon', 'branched-top', 'cómplices', 'lbl-accomplice');
+
+            // 2. Left Column (Victims) - WITH TRANSITIONS
+            connect('isabela', 'tisbea', 'vertical', 'Huye a Tarragona', 'lbl-neutral');
+            connect('tisbea', 'ana', 'vertical', 'Va a Sevilla', 'lbl-neutral');
+            connect('ana', 'aminta', 'vertical', 'Huye a Dos Hermanas', 'lbl-neutral');
+
+            // 3. Horizontal Connections
+            connect('isabela', 'octavio', 'horizontal');
+            connect('ana', 'mota', 'horizontal');
+            connect('ana', 'gonzalo'); 
+            connect('aminta', 'batricio', 'horizontal');
+
+            // 4. Accomplice Column (Right)
+            connect('catalinon', 'pedro', 'vertical');
+            connect('pedro', 'mota-right', 'vertical');
+
+            // 5. Authority Connections
+            connect('octavio', 'rey-napoles', 'horizontal');
+            connect('pedro', 'rey-napoles'); 
+            connect('gonzalo', 'rey-castilla');
+            connect('batricio', 'rey-castilla');
+        }
+
+        window.onload = draw;
+        window.onresize = draw;
+    </script>
+</body>
+</html>
